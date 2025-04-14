@@ -83,6 +83,11 @@ export function PlayerScorePanel({
 
   // キー入力ハンドラ
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    // IME変換中の場合は処理をスキップ
+    if (e.nativeEvent.isComposing) {
+      return;
+    }
+    
     if (e.key === 'Enter') {
       finishEditing();
     } else if (e.key === 'Escape') {
