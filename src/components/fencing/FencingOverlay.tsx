@@ -242,6 +242,12 @@ export function FencingOverlay() {
               </ul>
             </div>
             <div>
+              <h3 className="font-medium">再生コントロール</h3>
+              <ul className="list-disc pl-5">
+                <li>Shift+Sキー: スロー再生モード切替（0.25倍速）</li>
+              </ul>
+            </div>
+            <div>
               <h3 className="font-medium">左側選手のスコア</h3>
               <ul className="list-disc pl-5">
                 <li>Qキー: 攻撃得点（赤）</li>
