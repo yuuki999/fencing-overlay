@@ -148,7 +148,7 @@ export function VideoPlayer({ onVideoLoaded, overlayContent }: VideoPlayerProps)
         {/* スロー再生モードインジケーター */}
         {isSlowMotion && videoSrc && (
           <div className="absolute top-4 right-4 bg-red-600 text-white px-2 py-1 rounded-md text-sm font-bold opacity-80">
-            スロー再生 (0.25x) {isMuted ? "- ミュート中" : ""}
+            スロー再生
           </div>
         )}
       </div>
