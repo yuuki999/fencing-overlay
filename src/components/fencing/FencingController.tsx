@@ -126,10 +126,10 @@ export function FencingController({
 
     switch (event.code) {
       // 攻撃インジケータの制御
-      case "ArrowLeft":
+      case "Digit9": // 左側に優先権表示
         updateAttackIndicator("left");
         break;
-      case "ArrowRight":
+      case "Digit0": // 右側に優先権表示
         updateAttackIndicator("right");
         break;
       case "Escape":

@@ -17,8 +17,8 @@ export function FencingOverlay() {
     left: PlayerInfo;
     right: PlayerInfo;
   }>({
-    left: { name: "左側選手", side: "left", showName: true },
-    right: { name: "右側選手", side: "right", showName: true },
+    left: { name: "左側選手", side: "left", showName: false },
+    right: { name: "右側選手", side: "right", showName: false },
   });
   
   // フェンシングの状態
@@ -364,8 +364,8 @@ export function FencingOverlay() {
             <div>
               <h3 className="font-medium">攻防表示</h3>
               <ul className="list-disc pl-5">
-                <li>左矢印キー: 左側に表示</li>
-                <li>右矢印キー: 右側に表示</li>
+                <li>9キー: 左側に表示</li>
+                <li>0キー: 右側に表示</li>
                 <li>ESCキー: 非表示</li>
               </ul>
             </div>
@@ -376,12 +376,6 @@ export function FencingOverlay() {
                 <li>2キー: 空振り音(ﾌﾞｫﾝ)</li>
                 <li>3キー: 止まる足音(ｷｭｯ)</li>
                 <li>4キー: 剣がこすれる音(ｶｼｭ)</li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-medium">再生コントロール</h3>
-              <ul className="list-disc pl-5">
-                <li>Shift+Mキー: スロー再生モード切替（0.25倍速）</li>
               </ul>
             </div>
             <div>
@@ -404,6 +398,12 @@ export function FencingOverlay() {
                 <li>Kキー: 防御無効（白）</li>
                 <li>Oキー: 反撃成功（緑）</li>
                 <li>Lキー: 反撃無効（白）</li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-medium">再生コントロール</h3>
+              <ul className="list-disc pl-5">
+                <li>Shift+Mキー: スロー再生モード切替（0.25倍速）</li>
               </ul>
             </div>
             <div>
