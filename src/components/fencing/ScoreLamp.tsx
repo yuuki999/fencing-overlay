@@ -82,24 +82,6 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
       : 'animate-slide-in-right'
     : '';
 
-  // ルビテキスト（キーボードショートカット）の決定
-  let rubyText = '';
-  if (side === 'left') {
-    if (type === 'attack-valid') rubyText = 'Q';
-    else if (type === 'attack-invalid') rubyText = 'A';
-    else if (type === 'defense-valid') rubyText = 'W';
-    else if (type === 'defense-invalid') rubyText = 'S';
-    else if (type === 'counter-valid') rubyText = 'E';
-    else if (type === 'counter-invalid') rubyText = 'D';
-  } else {
-    if (type === 'attack-valid') rubyText = 'U';
-    else if (type === 'attack-invalid') rubyText = 'J';
-    else if (type === 'defense-valid') rubyText = 'I';
-    else if (type === 'defense-invalid') rubyText = 'K';
-    else if (type === 'counter-valid') rubyText = 'O';
-    else if (type === 'counter-invalid') rubyText = 'L';
-  }
-
   // 一意のキーを生成（同じタイプでも毎回異なるキーになるようにタイムスタンプを使用）
   const uniqueKey = `${side}-${type}-${Date.now()}`;
 
@@ -107,15 +89,15 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
     <div 
       key={uniqueKey}
       className={cn(
-        "absolute top-1/3 transform -translate-y-1/2 py-3 px-6 rounded-md shadow-lg",
+        "absolute transform py-5 px-10 rounded-md shadow-lg",
         bgColorClass,
         animationClass,
-        side === 'left' ? 'left-8' : 'right-8'
+        side === 'left' ? 'left-8' : 'right-8',
+        "bottom-32" // 選手名の少し上に表示
       )}
     >
       <div className="text-center">
-        <div className="text-xs font-mono mb-1">{rubyText}</div>
-        <div className="text-xl font-semibold">{ScoreLampText[type]}</div>
+        <div className="text-2xl font-bold">{ScoreLampText[type]}</div>
       </div>
     </div>
   );

@@ -6,7 +6,6 @@ import { AttackIndicator } from "./AttackIndicator";
 import { PlayerScorePanel } from "./PlayerScorePanel";
 import { SoundPlayer } from "./SoundPlayer";
 import { FencingController } from "./FencingController";
-import { AnimatedPlayerName } from "./AnimatedPlayerName";
 import { ScoreLamp } from "./ScoreLamp";
 import { FencingState, PlayerInfo, SoundType } from "@/types/fencing";
 import { Card } from "@/components/ui/card";
@@ -46,34 +45,6 @@ export function FencingOverlay() {
   // 操作説明の表示/非表示
   const [showInstructions, setShowInstructions] = useState(false);
 
-  // 選手名のアニメーション表示状態
-  const [showPlayerNameAnimation, setShowPlayerNameAnimation] = useState<{
-    left: boolean;
-    right: boolean;
-  }>({
-    left: false,
-    right: false,
-  });
-  
-  // 選手名の表示/非表示を切り替える関数
-  const togglePlayerNameVisibility = useCallback((side: "left" | "right") => {
-    setPlayers(prev => ({
-      ...prev,
-      [side]: {
-        ...prev[side],
-        showName: !prev[side].showName,
-      },
-    }));
-  }, []);
-
-  // 選手名のアニメーション表示/非表示を切り替える関数
-  const togglePlayerNameAnimation = useCallback((side: "left" | "right") => {
-    setShowPlayerNameAnimation(prev => ({
-      ...prev,
-      [side]: !prev[side],
-    }));
-  }, []);
-
   // 選手名を更新する関数
   const updatePlayerName = useCallback((side: "left" | "right", name: string) => {
     setPlayers(prev => ({
@@ -83,6 +54,26 @@ export function FencingOverlay() {
         name,
       },
     }));
+  }, []);
+
+  // 両方の選手名の表示/非表示を同時に切り替える関数
+  const toggleBothPlayerNamesVisibility = useCallback(() => {
+    setPlayers(prev => {
+      // 現在の表示状態を確認（両方表示されているかどうか）
+      const bothVisible = prev.left.showName && prev.right.showName;
+      
+      // 両方表示されている場合は両方非表示に、それ以外は両方表示に
+      return {
+        left: {
+          ...prev.left,
+          showName: !bothVisible,
+        },
+        right: {
+          ...prev.right,
+          showName: !bothVisible,
+        }
+      };
+    });
   }, []);
 
   // フェンシングの状態が変更されたときのハンドラ
@@ -316,22 +307,11 @@ export function FencingOverlay() {
         break;
         
       // 選手名の表示/非表示切り替え
-      case 'f':
-        togglePlayerNameVisibility("left");
-        break;
-      case 'h':
-        togglePlayerNameVisibility("right");
-        break;
-        
-      // 選手名のアニメーション表示切り替え
-      case 'g':
-        togglePlayerNameAnimation("left");
-        break;
-      case 't':
-        togglePlayerNameAnimation("right");
+      case 'n': // 両方の選手名表示/非表示を同時に切り替え
+        toggleBothPlayerNamesVisibility();
         break;
     }
-  }, [actionMode, setFencingState, togglePlayerNameVisibility, togglePlayerNameAnimation, resetScoreLamps]);
+  }, [actionMode, setFencingState, resetScoreLamps, toggleBothPlayerNamesVisibility]);
 
   // キーボードイベントリスナーの設定
   useEffect(() => {
@@ -427,17 +407,9 @@ export function FencingOverlay() {
               </ul>
             </div>
             <div>
-              <h3 className="font-medium">選手名の表示/非表示</h3>
+              <h3 className="font-medium">選手名とスコアランプ</h3>
               <ul className="list-disc pl-5">
-                <li>Fキー: 左側選手の名前表示切替</li>
-                <li>Hキー: 右側選手の名前表示切替</li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-medium">選手名アニメーション</h3>
-              <ul className="list-disc pl-5">
-                <li>Gキー: 左側選手の名前アニメーション表示切替</li>
-                <li>Tキー: 右側選手の名前アニメーション表示切替</li>
+                <li>Nキー: 選手名表示切替</li>
                 <li>Zキー: スコアランプをリセット</li>
               </ul>
             </div>
@@ -457,16 +429,6 @@ export function FencingOverlay() {
                 visible={fencingState.attackIndicator !== null} 
               />
               
-              {/* 選手名アニメーション表示 */}
-              <AnimatedPlayerName 
-                player={players.left} 
-                show={showPlayerNameAnimation.left} 
-              />
-              <AnimatedPlayerName 
-                player={players.right} 
-                show={showPlayerNameAnimation.right} 
-              />
-              
               {/* スコアランプ表示 */}
               <ScoreLamp
                 type={fencingState.leftScore.type}
@@ -483,22 +445,26 @@ export function FencingOverlay() {
               
               {/* 選手スコアパネル */}
               <div className="absolute bottom-16 left-4 right-4 flex justify-between pointer-events-auto">
-                <div className="w-2/5">
-                  <PlayerScorePanel 
-                    player={players.left}
-                    onPlayerNameChange={(name) => updatePlayerName("left", name)}
-                    editable={true}
-                    showName={players.left.showName}
-                  />
-                </div>
-                <div className="w-2/5">
-                  <PlayerScorePanel 
-                    player={players.right}
-                    onPlayerNameChange={(name) => updatePlayerName("right", name)}
-                    editable={true}
-                    showName={players.right.showName}
-                  />
-                </div>
+                {players.left.showName && (
+                  <div className="w-2/5">
+                    <PlayerScorePanel 
+                      player={players.left}
+                      onPlayerNameChange={(name) => updatePlayerName("left", name)}
+                      editable={true}
+                      showName={true}
+                    />
+                  </div>
+                )}
+                {players.right.showName && (
+                  <div className="w-2/5">
+                    <PlayerScorePanel 
+                      player={players.right}
+                      onPlayerNameChange={(name) => updatePlayerName("right", name)}
+                      editable={true}
+                      showName={true}
+                    />
+                  </div>
+                )}
               </div>
             </>
           }
