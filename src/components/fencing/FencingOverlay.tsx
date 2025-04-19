@@ -6,6 +6,8 @@ import { AttackIndicator } from "./AttackIndicator";
 import { PlayerScorePanel } from "./PlayerScorePanel";
 import { SoundPlayer } from "./SoundPlayer";
 import { FencingController } from "./FencingController";
+import { AnimatedPlayerName } from "./AnimatedPlayerName";
+import { ScoreLamp } from "./ScoreLamp";
 import { FencingState, PlayerInfo, SoundType } from "@/types/fencing";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,8 +18,8 @@ export function FencingOverlay() {
     left: PlayerInfo;
     right: PlayerInfo;
   }>({
-    left: { name: "左側選手", side: "left" },
-    right: { name: "右側選手", side: "right" },
+    left: { name: "左側選手", side: "left", showName: true },
+    right: { name: "右側選手", side: "right", showName: true },
   });
   
   // フェンシングの状態
@@ -43,6 +45,34 @@ export function FencingOverlay() {
   
   // 操作説明の表示/非表示
   const [showInstructions, setShowInstructions] = useState(false);
+
+  // 選手名のアニメーション表示状態
+  const [showPlayerNameAnimation, setShowPlayerNameAnimation] = useState<{
+    left: boolean;
+    right: boolean;
+  }>({
+    left: false,
+    right: false,
+  });
+  
+  // 選手名の表示/非表示を切り替える関数
+  const togglePlayerNameVisibility = useCallback((side: "left" | "right") => {
+    setPlayers(prev => ({
+      ...prev,
+      [side]: {
+        ...prev[side],
+        showName: !prev[side].showName,
+      },
+    }));
+  }, []);
+
+  // 選手名のアニメーション表示/非表示を切り替える関数
+  const togglePlayerNameAnimation = useCallback((side: "left" | "right") => {
+    setShowPlayerNameAnimation(prev => ({
+      ...prev,
+      [side]: !prev[side],
+    }));
+  }, []);
 
   // 選手名を更新する関数
   const updatePlayerName = useCallback((side: "left" | "right", name: string) => {
@@ -74,107 +104,234 @@ export function FencingOverlay() {
   const handleVideoLoaded = useCallback(() => {
   }, []);
 
+  // スコアランプをリセットする関数
+  const resetScoreLamps = useCallback(() => {
+    setFencingState(prev => ({
+      ...prev,
+      leftScore: {
+        ...prev.leftScore,
+        active: false,
+        type: null,
+      },
+      rightScore: {
+        ...prev.rightScore,
+        active: false,
+        type: null,
+      }
+    }));
+  }, []);
+
   // キーボードイベントハンドラ
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (!actionMode) return;
 
     switch (e.key.toLowerCase()) {
-      // 攻撃インジケーター
-      case 'a':
-        setFencingState(prev => ({
-          ...prev,
-          attackIndicator: "left"
-        }));
-        break;
-      case 'd':
-        setFencingState(prev => ({
-          ...prev,
-          attackIndicator: "right"
-        }));
-        break;
-      case 's':
-        setFencingState(prev => ({
-          ...prev,
-          attackIndicator: null
-        }));
-        break;
-
-      // 左側選手のスコア
-      case 'q':
+      // 左側選手のスコアランプ
+      case 'q': // 攻撃成功（赤）
         setFencingState(prev => ({
           ...prev,
           leftScore: {
-            type: "attack",
-            color: "red",
+            type: 'attack-valid',
+            color: 'red',
             active: true
           },
           rightScore: {
             ...prev.rightScore,
-            active: false
+            active: false,
+            type: null
           }
         }));
         break;
-      case 'w':
+      case 'a': // 攻撃無効（白）
         setFencingState(prev => ({
           ...prev,
           leftScore: {
-            type: "attack",
-            color: "white",
+            type: 'attack-invalid',
+            color: 'white',
             active: true
           },
           rightScore: {
             ...prev.rightScore,
-            active: false
+            active: false,
+            type: null
+          }
+        }));
+        break;
+      case 'w': // 防御成功（赤）
+        setFencingState(prev => ({
+          ...prev,
+          leftScore: {
+            type: 'defense-valid',
+            color: 'red',
+            active: true
+          },
+          rightScore: {
+            ...prev.rightScore,
+            active: false,
+            type: null
+          }
+        }));
+        break;
+      case 's': // 防御無効（白）
+        setFencingState(prev => ({
+          ...prev,
+          leftScore: {
+            type: 'defense-invalid',
+            color: 'white',
+            active: true
+          },
+          rightScore: {
+            ...prev.rightScore,
+            active: false,
+            type: null
+          }
+        }));
+        break;
+      case 'e': // 反撃成功（赤）
+        setFencingState(prev => ({
+          ...prev,
+          leftScore: {
+            type: 'counter-valid',
+            color: 'red',
+            active: true
+          },
+          rightScore: {
+            ...prev.rightScore,
+            active: false,
+            type: null
+          }
+        }));
+        break;
+      case 'd': // 反撃無効（白）
+        setFencingState(prev => ({
+          ...prev,
+          leftScore: {
+            type: 'counter-invalid',
+            color: 'white',
+            active: true
+          },
+          rightScore: {
+            ...prev.rightScore,
+            active: false,
+            type: null
           }
         }));
         break;
 
-      // 右側選手のスコア
-      case 'u':
+      // 右側選手のスコアランプ
+      case 'u': // 攻撃成功（緑）
         setFencingState(prev => ({
           ...prev,
           rightScore: {
-            type: "attack",
-            color: "green",
+            type: 'attack-valid',
+            color: 'green',
             active: true
           },
           leftScore: {
             ...prev.leftScore,
-            active: false
+            active: false,
+            type: null
           }
         }));
         break;
-      case 'i':
+      case 'j': // 攻撃無効（白）
         setFencingState(prev => ({
           ...prev,
           rightScore: {
-            type: "attack",
-            color: "white",
+            type: 'attack-invalid',
+            color: 'white',
             active: true
           },
           leftScore: {
             ...prev.leftScore,
-            active: false
+            active: false,
+            type: null
+          }
+        }));
+        break;
+      case 'i': // 防御成功（緑）
+        setFencingState(prev => ({
+          ...prev,
+          rightScore: {
+            type: 'defense-valid',
+            color: 'green',
+            active: true
+          },
+          leftScore: {
+            ...prev.leftScore,
+            active: false,
+            type: null
+          }
+        }));
+        break;
+      case 'k': // 防御無効（白）
+        setFencingState(prev => ({
+          ...prev,
+          rightScore: {
+            type: 'defense-invalid',
+            color: 'white',
+            active: true
+          },
+          leftScore: {
+            ...prev.leftScore,
+            active: false,
+            type: null
+          }
+        }));
+        break;
+      case 'o': // 反撃成功（緑）
+        setFencingState(prev => ({
+          ...prev,
+          rightScore: {
+            type: 'counter-valid',
+            color: 'green',
+            active: true
+          },
+          leftScore: {
+            ...prev.leftScore,
+            active: false,
+            type: null
+          }
+        }));
+        break;
+      case 'l': // 反撃無効（白）
+        setFencingState(prev => ({
+          ...prev,
+          rightScore: {
+            type: 'counter-invalid',
+            color: 'white',
+            active: true
+          },
+          leftScore: {
+            ...prev.leftScore,
+            active: false,
+            type: null
           }
         }));
         break;
 
       // リセット
       case 'z':
-        setFencingState(prev => ({
-          ...prev,
-          leftScore: {
-            ...prev.leftScore,
-            active: false
-          },
-          rightScore: {
-            ...prev.rightScore,
-            active: false
-          }
-        }));
+        resetScoreLamps();
+        break;
+        
+      // 選手名の表示/非表示切り替え
+      case 'f':
+        togglePlayerNameVisibility("left");
+        break;
+      case 'h':
+        togglePlayerNameVisibility("right");
+        break;
+        
+      // 選手名のアニメーション表示切り替え
+      case 'g':
+        togglePlayerNameAnimation("left");
+        break;
+      case 't':
+        togglePlayerNameAnimation("right");
         break;
     }
-  }, [actionMode, setFencingState]);
+  }, [actionMode, setFencingState, togglePlayerNameVisibility, togglePlayerNameAnimation, resetScoreLamps]);
 
   // キーボードイベントリスナーの設定
   useEffect(() => {
@@ -218,7 +375,7 @@ export function FencingOverlay() {
       {/* 操作説明 */}
       {showInstructions && (
         <Card className="p-4">
-          <h2 className="text-lg font-semibold mb-2">キーボード操作説明</h2>
+          <h2 className="text-lg font-bold mb-2">キーボードショートカット</h2>
           <div className="text-sm mb-4 text-yellow-600 dark:text-yellow-400 font-medium">
             ※ キーボード操作はアクションモードがONの時のみ有効です<br />
             ※ Alt+Aキーでアクションモードを切り替えることもできます
@@ -248,17 +405,40 @@ export function FencingOverlay() {
               </ul>
             </div>
             <div>
-              <h3 className="font-medium">左側選手のスコア</h3>
+              <h3 className="font-medium">左側選手のスコアランプ</h3>
               <ul className="list-disc pl-5">
-                <li>Qキー: 攻撃得点（赤）</li>
-                <li>Wキー: 無効攻撃（白）</li>
+                <li>Qキー: 攻撃成功（赤）</li>
+                <li>Aキー: 攻撃無効（白）</li>
+                <li>Wキー: 防御成功（赤）</li>
+                <li>Sキー: 防御無効（白）</li>
+                <li>Eキー: 反撃成功（赤）</li>
+                <li>Dキー: 反撃無効（白）</li>
               </ul>
             </div>
             <div>
-              <h3 className="font-medium">右側選手のスコア</h3>
+              <h3 className="font-medium">右側選手のスコアランプ</h3>
               <ul className="list-disc pl-5">
-                <li>Uキー: 攻撃得点（緑）</li>
-                <li>Iキー: 無効攻撃（白）</li>
+                <li>Uキー: 攻撃成功（緑）</li>
+                <li>Jキー: 攻撃無効（白）</li>
+                <li>Iキー: 防御成功（緑）</li>
+                <li>Kキー: 防御無効（白）</li>
+                <li>Oキー: 反撃成功（緑）</li>
+                <li>Lキー: 反撃無効（白）</li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-medium">選手名の表示/非表示</h3>
+              <ul className="list-disc pl-5">
+                <li>Fキー: 左側選手の名前表示切替</li>
+                <li>Hキー: 右側選手の名前表示切替</li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-medium">選手名アニメーション</h3>
+              <ul className="list-disc pl-5">
+                <li>Gキー: 左側選手の名前アニメーション表示切替</li>
+                <li>Tキー: 右側選手の名前アニメーション表示切替</li>
+                <li>Zキー: スコアランプをリセット</li>
               </ul>
             </div>
           </div>
@@ -277,24 +457,46 @@ export function FencingOverlay() {
                 visible={fencingState.attackIndicator !== null} 
               />
               
+              {/* 選手名アニメーション表示 */}
+              <AnimatedPlayerName 
+                player={players.left} 
+                show={showPlayerNameAnimation.left} 
+              />
+              <AnimatedPlayerName 
+                player={players.right} 
+                show={showPlayerNameAnimation.right} 
+              />
+              
+              {/* スコアランプ表示 */}
+              <ScoreLamp
+                type={fencingState.leftScore.type}
+                color={fencingState.leftScore.color}
+                side="left"
+                active={fencingState.leftScore.active}
+              />
+              <ScoreLamp
+                type={fencingState.rightScore.type}
+                color={fencingState.rightScore.color}
+                side="right"
+                active={fencingState.rightScore.active}
+              />
+              
               {/* 選手スコアパネル */}
               <div className="absolute bottom-16 left-4 right-4 flex justify-between pointer-events-auto">
                 <div className="w-2/5">
                   <PlayerScorePanel 
                     player={players.left}
-                    scoreColor={fencingState.leftScore.color}
-                    active={fencingState.leftScore.active}
                     onPlayerNameChange={(name) => updatePlayerName("left", name)}
                     editable={true}
+                    showName={players.left.showName}
                   />
                 </div>
                 <div className="w-2/5">
                   <PlayerScorePanel 
                     player={players.right}
-                    scoreColor={fencingState.rightScore.color}
-                    active={fencingState.rightScore.active}
                     onPlayerNameChange={(name) => updatePlayerName("right", name)}
                     editable={true}
+                    showName={players.right.showName}
                   />
                 </div>
               </div>

@@ -2,11 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { 
-  AttackSide, 
   FencingState, 
-  PlayerSide, 
-  ScoreColor, 
-  ScoreType, 
   SoundType 
 } from "@/types/fencing";
 
@@ -49,9 +45,9 @@ export function FencingController({
 
   // スコア表示を更新する関数
   const updateScore = useCallback((
-    side: PlayerSide, 
-    type: ScoreType, 
-    color: ScoreColor
+    side: "left" | "right", 
+    type: "attack-valid" | "attack-invalid" | "defense-valid" | "defense-invalid" | "counter-valid" | "counter-invalid", 
+    color: "red" | "green" | "white"
   ) => {
     setState(prev => {
       const newState = { ...prev };
@@ -94,7 +90,7 @@ export function FencingController({
   }, [scoreTimeouts]);
 
   // 攻撃インジケータを更新する関数
-  const updateAttackIndicator = useCallback((side: AttackSide) => {
+  const updateAttackIndicator = useCallback((side: "left" | "right" | null) => {
     setState(prev => ({
       ...prev,
       attackIndicator: side,
@@ -141,19 +137,43 @@ export function FencingController({
         break;
 
       // 左側の選手のスコア
-      case "KeyQ": // 左側選手の攻撃得点（赤）
-        updateScore("left", "attack", "red");
+      case "KeyQ": // 左側選手の攻撃成功（赤）
+        updateScore("left", "attack-valid", "red");
         break;
-      case "KeyW": // 左側選手の無効攻撃（白）
-        updateScore("left", "attack", "white");
+      case "KeyA": // 左側選手の攻撃無効（白）
+        updateScore("left", "attack-invalid", "white");
+        break;
+      case "KeyW": // 左側選手の防御成功（赤）
+        updateScore("left", "defense-valid", "red");
+        break;
+      case "KeyS": // 左側選手の防御無効（白）
+        updateScore("left", "defense-invalid", "white");
+        break;
+      case "KeyE": // 左側選手の反撃成功（赤）
+        updateScore("left", "counter-valid", "red");
+        break;
+      case "KeyD": // 左側選手の反撃無効（白）
+        updateScore("left", "counter-invalid", "white");
         break;
 
       // 右側の選手のスコア
-      case "KeyU": // 右側選手の攻撃得点（緑）
-        updateScore("right", "attack", "green");
+      case "KeyU": // 右側選手の攻撃成功（緑）
+        updateScore("right", "attack-valid", "green");
         break;
-      case "KeyI": // 右側選手の無効攻撃（白）
-        updateScore("right", "attack", "white");
+      case "KeyJ": // 右側選手の攻撃無効（白）
+        updateScore("right", "attack-invalid", "white");
+        break;
+      case "KeyI": // 右側選手の防御成功（緑）
+        updateScore("right", "defense-valid", "green");
+        break;
+      case "KeyK": // 右側選手の防御無効（白）
+        updateScore("right", "defense-invalid", "white");
+        break;
+      case "KeyO": // 右側選手の反撃成功（緑）
+        updateScore("right", "counter-valid", "green");
+        break;
+      case "KeyL": // 右側選手の反撃無効（白）
+        updateScore("right", "counter-invalid", "white");
         break;
 
       // 効果音のみ再生
