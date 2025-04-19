@@ -381,7 +381,7 @@ export function FencingOverlay() {
             <div>
               <h3 className="font-medium">再生コントロール</h3>
               <ul className="list-disc pl-5">
-                <li>Shift+Sキー: スロー再生モード切替（0.25倍速）</li>
+                <li>Shift+Mキー: スロー再生モード切替（0.25倍速）</li>
               </ul>
             </div>
             <div>

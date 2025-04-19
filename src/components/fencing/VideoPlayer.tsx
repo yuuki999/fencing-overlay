@@ -69,8 +69,8 @@ export function VideoPlayer({ onVideoLoaded, overlayContent }: VideoPlayerProps)
       return;
     }
 
-    // 'S'キーでスロー再生モードを切り替え
-    if (e.key.toLowerCase() === 's' && e.shiftKey) {
+    // 'M'キーでスロー再生モードを切り替え
+    if (e.key.toLowerCase() === 'm' && e.shiftKey) {
       e.preventDefault(); // 先にpreventDefaultを実行
       e.stopPropagation(); // イベントの伝播を停止
       toggleSlowMotion();
