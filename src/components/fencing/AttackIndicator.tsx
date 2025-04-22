@@ -35,7 +35,7 @@ export function AttackIndicator({ side, visible }: AttackIndicatorProps) {
   return (
     <div
       className={cn(
-        "absolute top-4 h-16 w-28 bg-yellow-400 rounded-md z-10 flex flex-col items-center justify-center",
+        "absolute top-4 h-24 w-48 bg-yellow-400 rounded-md z-10 flex flex-col items-center justify-center",
         visible ? "opacity-100" : "opacity-0 pointer-events-none",
         "transition-all duration-500 ease-in-out"
       )}
@@ -44,8 +44,11 @@ export function AttackIndicator({ side, visible }: AttackIndicatorProps) {
         transitionProperty: "opacity, left, right, transform"
       }}
     >
-      <span className="text-black font-bold text-sm">優先権</span>
-      <span className="text-black text-xs">priorité</span>
+      <span className="text-black font-bold text-lg">priorite</span>
+      <span 
+        className="text-black font-bold text-4xl" 
+        style={{ fontFamily: "\"Hiragino Mincho ProN\", \"Yu Mincho\", \"MS PMincho\", serif" }}
+      >優先権</span>
     </div>
   );
 }
