@@ -6,7 +6,7 @@ export type ScoreColor = 'green' | 'red' | 'white' | null;
 
 export type PlayerSide = 'left' | 'right';
 
-export type SoundType = 'kakin' | 'buon' | 'kyut' | 'kashu';
+export type SoundType = 'kakin' | 'buon' | 'kyut' | 'kashu' | 'score';
 
 // スコアランプの種類を定義
 export type ScoreLampType = 

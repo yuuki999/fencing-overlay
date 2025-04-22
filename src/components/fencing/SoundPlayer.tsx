@@ -15,6 +15,7 @@ export function SoundPlayer({ soundToPlay, onSoundPlayed }: SoundPlayerProps) {
     buon: null,
     kyut: null,
     kashu: null,
+    score: null,
   });
 
   // コンポーネントのマウント時に効果音をプリロード
@@ -27,7 +28,8 @@ export function SoundPlayer({ soundToPlay, onSoundPlayed }: SoundPlayerProps) {
       kakin: new Audio("/sounds/kakin.mp3"), // 剣をはらう音
       buon: new Audio("/sounds/buon.mp3"),   // 空振り音
       kyut: new Audio("/sounds/kyut.mp3"),   // 止まる足音
-      kashu: new Audio("/sounds/kashu.mp3"), // 剣がこすれる音
+      kashu: new Audio("/sounds/kashu.mp3"), // 刀を鞘にしまう2チャイン
+      score: new Audio("/sounds/文字表示の衝撃音3.mp3"), // スコアランプ表示時の効果音
     };
 
     // プリロード設定

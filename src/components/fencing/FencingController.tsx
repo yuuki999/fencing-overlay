@@ -49,6 +49,9 @@ export function FencingController({
     type: "attack-valid" | "attack-invalid" | "defense-valid" | "defense-invalid" | "counter-valid" | "counter-invalid", 
     color: "red" | "green" | "white"
   ) => {
+    // スコアランプ表示時の効果音を再生
+    onPlaySound("score");
+    
     setState(prev => {
       const newState = { ...prev };
       newState[`${side}Score`] = {
@@ -87,7 +90,7 @@ export function FencingController({
       ...prev,
       [side]: timeoutId,
     }));
-  }, [scoreTimeouts]);
+  }, [scoreTimeouts, onPlaySound]);
 
   // 攻撃インジケータを更新する関数
   const updateAttackIndicator = useCallback((side: "left" | "right" | null) => {
