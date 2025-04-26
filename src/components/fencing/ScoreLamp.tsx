@@ -4,13 +4,8 @@ import { useEffect, useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { ScoreLampType, ScoreLampText, PlayerSide, ScoreColor } from "@/types/fencing";
 
-// キラキラエフェクト用のスタイル
-const sparkleKeyframes = `
-  @keyframes sparkle {
-    0%, 100% { opacity: 0; transform: scale(0); }
-    50% { opacity: 1; transform: scale(1); }
-  }
-  
+// アニメーション用のスタイル
+const animationKeyframes = `
   @keyframes slideInLeft {
     0% {
       transform: translateX(-100%); /* 要素の幅分左に移動 */
@@ -34,6 +29,18 @@ const sparkleKeyframes = `
     }
     40%,100% {
       opacity: 1;
+    }
+  }
+  
+  @keyframes shine {
+    0% {
+      background-position-x: 400%;
+    }
+    50% {
+      background-position-x: 0%;
+    }
+    100% {
+      background-position-x: -400%;
     }
   }
 `;
@@ -124,53 +131,10 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
   // 表示されない場合は何も表示しない
   if (!isVisible || !type) return null;
 
-  // 背景色はスタイル属性で直接指定するため、ここでの定義は不要
-
-  // アニメーションスタイルの決定
-  const animationStyle: React.CSSProperties = isAnimating
-    ? {
-        animation: side === 'left'
-          ? 'slideInLeft 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards'
-          : 'slideInRight 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards',
-        animationFillMode: 'forwards' // アニメーション終了後も最終状態を維持
-      }
-    : {};
-
   // 一意のキーを生成（同じタイプでも毎回異なるキーになるようにタイムスタンプを使用）
   const uniqueKey = `${side}-${type}-${Date.now()}`;
 
-  // キラキラエフェクト用のコンポーネント
-  const Sparkles = () => {
-    return (
-      <>
-        <style jsx global>{sparkleKeyframes}</style>
-        {[...Array(20)].map((_, i) => { // エフェクト数を増やす
-          const size = Math.random() * 15 + 8; // サイズを大きく
-          const top = Math.random() * 100;
-          const left = Math.random() * 100;
-          const delay = Math.random() * 2;
-          const duration = Math.random() * 1 + 1;
-          
-          return (
-            <div
-              key={i}
-              className="absolute rounded-full bg-white"
-              style={{
-                width: `${size}px`,
-                height: `${size}px`,
-                top: `${top}%`,
-                left: `${left}%`,
-                opacity: 0,
-                boxShadow: '0 0 15px 3px rgba(255, 255, 255, 0.8)', // シャドウを強く
-                animation: `sparkle ${duration}s ${delay}s infinite`,
-                zIndex: 5
-              }}
-            />
-          );
-        })}
-      </>
-    );
-  };
+  // シャイニーエフェクトのみを使用するため、Sparklesコンポーネントは削除
 
   // 動画プレイヤーのサイズに基づいたスコアランプのサイズと位置を計算
   const getScoreLampStyle = () => {
@@ -194,17 +158,39 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
       // 左右の位置を計算
       const sideOffset = playerWidth * 0.02; // 左右の余白を少し増やして動画幅の2%に
       
+      // シャイニーエフェクトのグラデーションを設定
+      const getShinyBackground = () => {
+        if (color === 'red') {
+          return `linear-gradient(-45deg, #dc2626 50%, #ef4444 60%, #dc2626 70%)`; // 赤系
+        } else if (color === 'green') {
+          return `linear-gradient(-45deg, #16a34a 50%, #22c55e 60%, #16a34a 70%)`; // 緑系
+        } else {
+          return `linear-gradient(-45deg, #ffffff 50%, #f3f4f6 60%, #ffffff 70%)`; // 白系
+        }
+      };
+      
       // 動的にプロパティを生成するためのオブジェクト
       const styleObj: React.CSSProperties = {
         ...triangleStyles[side],
         width: `${lampWidth}px`,
         height: `${lampHeight}px`,
         backgroundColor: color === 'red' ? '#dc2626' : color === 'green' ? '#16a34a' : '#ffffff',
+        background: getShinyBackground(),
+        backgroundSize: '800% 100%', // 背景サイズを大きくしてグラデーションの動きを強調
         position: 'absolute',
         bottom: `${bottomOffset}px`,
-        zIndex: 4,
-        ...animationStyle
+        zIndex: 4
       };
+      
+      // アニメーションを個別に設定
+      if (isAnimating) {
+        styleObj.animation = side === 'left' 
+          ? 'slideInLeft 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards' 
+          : 'slideInRight 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards';
+        styleObj.animationFillMode = 'forwards';
+      } else {
+        styleObj.animation = 'shine 10s infinite linear';
+      }
       
       // 左右の位置を動的に設定
       if (side === 'left') {
@@ -216,17 +202,39 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
       return styleObj;
     }
     
+    // シャイニーエフェクトのグラデーションを設定 - より強調したグラデーション
+    const getShinyBackground = () => {
+      if (color === 'red') {
+        return `linear-gradient(-45deg, #b91c1c 30%, #ef4444 50%, #f87171 60%, #ef4444 70%, #b91c1c 90%)`; // 赤系強調
+      } else if (color === 'green') {
+        return `linear-gradient(-45deg, #15803d 30%, #22c55e 50%, #4ade80 60%, #22c55e 70%, #15803d 90%)`; // 緑系強調
+      } else {
+        return `linear-gradient(-45deg, #e5e7eb 30%, #ffffff 50%, #f8fafc 60%, #ffffff 70%, #e5e7eb 90%)`; // 白系強調
+      }
+    };
+    
     // 動画プレイヤー要素が存在しない場合はフォールバックとして固定サイズを使用
     const styleObj: React.CSSProperties = {
       ...triangleStyles[side],
       width: '300px',
       height: '200px',
       backgroundColor: color === 'red' ? '#dc2626' : color === 'green' ? '#16a34a' : '#ffffff',
+      background: getShinyBackground(),
+      backgroundSize: '600% 100%',
       position: 'absolute',
       bottom: '80px',
-      zIndex: 4,
-      ...animationStyle
+      zIndex: 4
     };
+    
+    // アニメーションを個別に設定
+    if (isAnimating) {
+      styleObj.animation = side === 'left' 
+        ? 'slideInLeft 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards' 
+        : 'slideInRight 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards';
+      styleObj.animationFillMode = 'forwards';
+    } else {
+      styleObj.animation = 'shine 10s infinite linear';
+    }
     
     // 左右の位置を動的に設定
     if (side === 'left') {
@@ -244,8 +252,8 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
       className="absolute transform shadow-lg overflow-hidden"
       style={getScoreLampStyle()}
     >
-      {/* キラキラエフェクト */}
-      {isAnimating && <Sparkles />}
+      {/* シャイニーエフェクトはスタイルで適用されるため、ここでは何も表示しない */}
+      <style jsx global>{animationKeyframes}</style>
       
       {/* テキストコンテンツ */}
       <div className={cn(
