@@ -44,7 +44,7 @@ export function AttackIndicator({ side, visible }: AttackIndicatorProps) {
         transitionProperty: "opacity, left, right, transform"
       }}
     >
-      <span className="text-black font-bold text-lg">priorite</span>
+      <span className="text-black font-bold text-lg">priorité</span>
       <span 
         className="text-black font-bold text-4xl" 
         style={{ fontFamily: "\"Hiragino Mincho ProN\", \"Yu Mincho\", \"MS PMincho\", serif" }}
