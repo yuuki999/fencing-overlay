@@ -199,7 +199,7 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
         </div>
         {/* 日本語テキスト - 明朝体 */}
         <div className={cn(
-          "text-7xl font-bold mt-6", // フォントサイズをさらに大きく、マージンも調整
+          "text-8xl font-bold mt-6", // フォントサイズをさらに大きく、マージンも調整
           color === 'white' ? 'text-black' : 'text-white',
           side === 'left' ? 'text-left' : 'text-right' // 左右に合わせてテキストの配置を調整
         )}
