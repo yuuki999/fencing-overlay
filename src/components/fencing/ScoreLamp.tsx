@@ -13,7 +13,7 @@ const sparkleKeyframes = `
   
   @keyframes slideInLeft {
     0% {
-      transform: translateX(-40vw); /* 画面幅に合わせて調整 */
+      transform: translateX(-100%); /* 要素の幅分左に移動 */
       opacity: 0;
     }
     100% {
@@ -26,7 +26,7 @@ const sparkleKeyframes = `
   
   @keyframes slideInRight {
     0% {
-      transform: translateX(40vw); /* 画面幅に合わせて調整 */
+      transform: translateX(100%); /* 要素の幅分右に移動 */
       opacity: 0;
     }
     100% {
@@ -39,7 +39,7 @@ const sparkleKeyframes = `
 `;
 
 // 三角形用のスタイル
-const triangleStyles = {
+const triangleStyles: Record<PlayerSide, React.CSSProperties> = {
   left: {
     borderStyle: 'solid',
     borderWidth: '0 0 0 0',
@@ -69,6 +69,14 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
   const prevTypeRef = useRef<ScoreLampType>(null);
   // タイマーID
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  // 動画プレイヤーの要素を参照するためのref
+  const videoPlayerRef = useRef<HTMLDivElement | null>(null);
+
+  // 動画プレイヤー要素を取得
+  useEffect(() => {
+    // 動画プレイヤーの要素を取得
+    videoPlayerRef.current = document.querySelector('.aspect-video');
+  }, []);
 
   // アクティブ状態が変わったときの処理
   useEffect(() => {
@@ -119,11 +127,12 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
   // 背景色はスタイル属性で直接指定するため、ここでの定義は不要
 
   // アニメーションスタイルの決定
-  const animationStyle = isAnimating
+  const animationStyle: React.CSSProperties = isAnimating
     ? {
         animation: side === 'left'
           ? 'slideInLeft 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards'
-          : 'slideInRight 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards'
+          : 'slideInRight 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards',
+        animationFillMode: 'forwards' // アニメーション終了後も最終状態を維持
       }
     : {};
 
@@ -163,23 +172,77 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
     );
   };
 
+  // 動画プレイヤーのサイズに基づいたスコアランプのサイズと位置を計算
+  const getScoreLampStyle = () => {
+    // 動画プレイヤー要素が存在する場合
+    if (videoPlayerRef.current) {
+      const playerRect = videoPlayerRef.current.getBoundingClientRect();
+      const playerWidth = playerRect.width;
+      const playerHeight = playerRect.height;
+      
+      // 動画プレイヤーのサイズに対するスコアランプのサイズ比率
+      const lampWidthRatio = 0.75; // 動画幅の75%に拡大
+      const lampHeightRatio = 0.75; // 動画高さの75%に拡大
+      
+      // スコアランプのサイズを計算
+      const lampWidth = playerWidth * lampWidthRatio;
+      const lampHeight = playerHeight * lampHeightRatio;
+      
+      // スコアランプの位置を計算 - 名前表示に被らないように上方に配置
+      const bottomOffset = playerHeight * 0.20; // 動画の下から20%の位置（名前表示はtop-1/3なので、それより上に配置）
+      
+      // 左右の位置を計算
+      const sideOffset = playerWidth * 0.02; // 左右の余白を少し増やして動画幅の2%に
+      
+      // 動的にプロパティを生成するためのオブジェクト
+      const styleObj: React.CSSProperties = {
+        ...triangleStyles[side],
+        width: `${lampWidth}px`,
+        height: `${lampHeight}px`,
+        backgroundColor: color === 'red' ? '#dc2626' : color === 'green' ? '#16a34a' : '#ffffff',
+        position: 'absolute',
+        bottom: `${bottomOffset}px`,
+        zIndex: 4,
+        ...animationStyle
+      };
+      
+      // 左右の位置を動的に設定
+      if (side === 'left') {
+        styleObj.left = `${sideOffset}px`;
+      } else {
+        styleObj.right = `${sideOffset}px`;
+      }
+      
+      return styleObj;
+    }
+    
+    // 動画プレイヤー要素が存在しない場合はフォールバックとして固定サイズを使用
+    const styleObj: React.CSSProperties = {
+      ...triangleStyles[side],
+      width: '300px',
+      height: '200px',
+      backgroundColor: color === 'red' ? '#dc2626' : color === 'green' ? '#16a34a' : '#ffffff',
+      position: 'absolute',
+      bottom: '80px',
+      zIndex: 4,
+      ...animationStyle
+    };
+    
+    // 左右の位置を動的に設定
+    if (side === 'left') {
+      styleObj.left = '10px';
+    } else {
+      styleObj.right = '10px';
+    }
+    
+    return styleObj;
+  };
+
   return (
     <div 
       key={uniqueKey}
-      className={cn(
-        "absolute transform shadow-lg overflow-hidden",
-        side === 'left' ? 'left-4' : 'right-4', // 画面の左右に少し余白を持たせる
-        "bottom-[12vh]" // 画面の下から10%の位置に配置（さらに下に表示）
-      )}
-      style={{
-        ...triangleStyles[side],
-        width: side === 'left' ? '40.5vw' : '40.5vw', // 画面幅の40.5%を使用（45vwの0.9倍）
-        height: '37.8vh', // 画面高さの37.8%を使用（42vhの0.9倍）
-        backgroundColor: color === 'red' ? '#dc2626' : color === 'green' ? '#16a34a' : '#ffffff',
-        position: 'absolute',
-        zIndex: 4,
-        ...animationStyle
-      }}
+      className="absolute transform shadow-lg overflow-hidden"
+      style={getScoreLampStyle()}
     >
       {/* キラキラエフェクト */}
       {isAnimating && <Sparkles />}
