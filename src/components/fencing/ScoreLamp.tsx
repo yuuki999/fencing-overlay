@@ -131,8 +131,8 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
   // 表示されない場合は何も表示しない
   if (!isVisible || !type) return null;
 
-  // 一意のキーを生成（同じタイプでも毎回異なるキーになるようにタイムスタンプを使用）
-  const uniqueKey = `${side}-${type}-${Date.now()}`;
+  // 安定したキーを生成（タイムスタンプを使用しない）
+  const stableKey = `${side}-${type}`;
 
   // シャイニーエフェクトのみを使用するため、Sparklesコンポーネントは削除
 
@@ -260,7 +260,7 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
 
   return (
     <div 
-      key={uniqueKey}
+      key={stableKey}
       className="absolute transform overflow-hidden"
       style={getScoreLampStyle()}
     >
