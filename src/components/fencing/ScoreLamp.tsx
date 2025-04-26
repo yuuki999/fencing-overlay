@@ -156,7 +156,7 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
       const bottomOffset = playerHeight * 0.20; // 動画の下から20%の位置（名前表示はtop-1/3なので、それより上に配置）
       
       // 左右の位置を計算
-      const sideOffset = playerWidth * 0.02; // 左右の余白を少し増やして動画幅の2%に
+      const sideOffset = playerWidth * 0.00; // スコアランプの余白が欲しい場合は数値をつける。
       
       // シャイニーエフェクトのグラデーションを設定
       const getShinyBackground = () => {
@@ -179,7 +179,12 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
         backgroundSize: '800% 100%', // 背景サイズを大きくしてグラデーションの動きを強調
         position: 'absolute',
         bottom: `${bottomOffset}px`,
-        zIndex: 4
+        zIndex: 4,
+        boxShadow: color === 'red' 
+          ? '0 0 15px 5px rgba(239, 68, 68, 0.6)' // 赤い光
+          : color === 'green' 
+            ? '0 0 15px 5px rgba(34, 197, 94, 0.6)' // 緑の光
+            : '0 0 15px 5px rgba(255, 255, 255, 0.6)', // 白い光
       };
       
       // アニメーションを個別に設定
@@ -220,10 +225,17 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
       height: '200px',
       backgroundColor: color === 'red' ? '#dc2626' : color === 'green' ? '#16a34a' : '#ffffff',
       background: getShinyBackground(),
-      backgroundSize: '600% 100%',
+      backgroundSize: '800% 100%', // 背景サイズを大きくしてグラデーションの動きを強調
       position: 'absolute',
       bottom: '80px',
-      zIndex: 4
+      zIndex: 4,
+      boxShadow: color === 'red' 
+        ? '0 0 15px 5px rgba(239, 68, 68, 0.6)' // 赤い光
+        : color === 'green' 
+          ? '0 0 15px 5px rgba(34, 197, 94, 0.6)' // 緑の光
+          : '0 0 15px 5px rgba(255, 255, 255, 0.6)', // 白い光
+      filter: 'blur(0.5px)', // 全体に微妙なぼかし効果
+      borderRadius: '4px' // 角を少し丸める
     };
     
     // アニメーションを個別に設定
@@ -249,7 +261,7 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
   return (
     <div 
       key={uniqueKey}
-      className="absolute transform shadow-lg overflow-hidden"
+      className="absolute transform overflow-hidden"
       style={getScoreLampStyle()}
     >
       {/* シャイニーエフェクトはスタイルで適用されるため、ここでは何も表示しない */}
