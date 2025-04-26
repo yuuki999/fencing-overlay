@@ -47,10 +47,13 @@ export function FencingController({
   const updateScore = useCallback((
     side: "left" | "right", 
     type: "attack-valid" | "attack-invalid" | "defense-valid" | "defense-invalid" | "counter-valid" | "counter-invalid", 
-    color: "red" | "green" | "white"
+    color: "red" | "green" | "white",
+    skipScoreSound: boolean = false // スコア音声をスキップするオプション
   ) => {
-    // スコアランプ表示時の効果音を再生
-    onPlaySound("score");
+    // スコアランプ表示時の効果音を再生（スキップフラグがない場合のみ）
+    if (!skipScoreSound) {
+      onPlaySound("score");
+    }
     
     setState(prev => {
       const newState = { ...prev };
@@ -141,42 +144,92 @@ export function FencingController({
 
       // 左側の選手のスコア
       case "KeyQ": // 左側選手の攻撃成功（赤）
+        // まずスコア音声を再生
         updateScore("left", "attack-valid", "red");
+        // 0.5秒後にアタック音声を再生
+        setTimeout(() => {
+          onPlaySound("attack");
+        }, 500);
         break;
       case "KeyA": // 左側選手の攻撃無効（白）
         updateScore("left", "attack-invalid", "white");
+        // 0.5秒後にアタック無効音声を再生
+        setTimeout(() => {
+          onPlaySound("attack-invalid");
+        }, 500);
         break;
       case "KeyW": // 左側選手の防御成功（赤）
         updateScore("left", "defense-valid", "red");
+        // 0.5秒後に防御成功音声を再生
+        setTimeout(() => {
+          onPlaySound("defense-valid");
+        }, 500);
         break;
       case "KeyS": // 左側選手の防御無効（白）
         updateScore("left", "defense-invalid", "white");
+        // 0.5秒後に防御無効音声を再生
+        setTimeout(() => {
+          onPlaySound("defense-invalid");
+        }, 500);
         break;
       case "KeyE": // 左側選手の反撃成功（赤）
         updateScore("left", "counter-valid", "red");
+        // 0.5秒後に反撃成功音声を再生
+        setTimeout(() => {
+          onPlaySound("counter-valid");
+        }, 500);
         break;
       case "KeyD": // 左側選手の反撃無効（白）
         updateScore("left", "counter-invalid", "white");
+        // 0.5秒後に反撃無効音声を再生
+        setTimeout(() => {
+          onPlaySound("counter-invalid");
+        }, 500);
         break;
 
       // 右側の選手のスコア
       case "KeyU": // 右側選手の攻撃成功（緑）
+        // まずスコア音声を再生
         updateScore("right", "attack-valid", "green");
+        // 0.5秒後にアタック音声を再生
+        setTimeout(() => {
+          onPlaySound("attack");
+        }, 500);
         break;
       case "KeyJ": // 右側選手の攻撃無効（白）
         updateScore("right", "attack-invalid", "white");
+        // 0.5秒後にアタック無効音声を再生
+        setTimeout(() => {
+          onPlaySound("attack-invalid");
+        }, 500);
         break;
       case "KeyI": // 右側選手の防御成功（緑）
         updateScore("right", "defense-valid", "green");
+        // 0.5秒後に防御成功音声を再生
+        setTimeout(() => {
+          onPlaySound("defense-valid");
+        }, 500);
         break;
       case "KeyK": // 右側選手の防御無効（白）
         updateScore("right", "defense-invalid", "white");
+        // 0.5秒後に防御無効音声を再生
+        setTimeout(() => {
+          onPlaySound("defense-invalid");
+        }, 500);
         break;
       case "KeyO": // 右側選手の反撃成功（緑）
         updateScore("right", "counter-valid", "green");
+        // 0.5秒後に反撃成功音声を再生
+        setTimeout(() => {
+          onPlaySound("counter-valid");
+        }, 500);
         break;
       case "KeyL": // 右側選手の反撃無効（白）
         updateScore("right", "counter-invalid", "white");
+        // 0.5秒後に反撃無効音声を再生
+        setTimeout(() => {
+          onPlaySound("counter-invalid");
+        }, 500);
         break;
 
       // 効果音のみ再生
