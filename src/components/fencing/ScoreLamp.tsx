@@ -191,18 +191,20 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
         side === 'left' ? 'items-start pl-8' : 'items-end pr-8'
       )}>
         <div className={cn(
-          "text-5xl font-bold", // フォントサイズをさらに大きく
+          "text-4xl font-bold", // フォントサイズを小さくしてルビの役割を明確に
           color === 'white' ? 'text-black' : 'text-white',
           side === 'left' ? 'text-left' : 'text-right' // 左右に合わせてテキストの配置を調整
         )}>
           {type && ScoreLampText[type]}
         </div>
-        {/* 日本語テキスト */}
+        {/* 日本語テキスト - 明朝体 */}
         <div className={cn(
-          "text-6xl font-bold mt-6", // フォントサイズをさらに大きく、マージンも調整
+          "text-7xl font-bold mt-6", // フォントサイズをさらに大きく、マージンも調整
           color === 'white' ? 'text-black' : 'text-white',
           side === 'left' ? 'text-left' : 'text-right' // 左右に合わせてテキストの配置を調整
-        )}>
+        )}
+        style={{ fontFamily: "\"Hiragino Mincho ProN\", \"Yu Mincho\", \"MS PMincho\", serif" }}
+        >
           {type && type.includes('attack') ? '攻撃' : 
            type && type.includes('defense') ? '防御' : 
            type && type.includes('counter') ? '反撃' : ''}
