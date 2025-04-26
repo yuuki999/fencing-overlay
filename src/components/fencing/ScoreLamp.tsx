@@ -13,7 +13,7 @@ const sparkleKeyframes = `
   
   @keyframes slideInLeft {
     0% {
-      transform: translateX(-180px);
+      transform: translateX(-40vw); /* 画面幅に合わせて調整 */
       opacity: 0;
     }
     100% {
@@ -26,7 +26,7 @@ const sparkleKeyframes = `
   
   @keyframes slideInRight {
     0% {
-      transform: translateX(180px);
+      transform: translateX(40vw); /* 画面幅に合わせて調整 */
       opacity: 0;
     }
     100% {
@@ -122,8 +122,8 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
   const animationStyle = isAnimating
     ? {
         animation: side === 'left'
-          ? 'slideInLeft 1s cubic-bezier(0.25, 1, 0.5, 1) forwards'
-          : 'slideInRight 1s cubic-bezier(0.25, 1, 0.5, 1) forwards'
+          ? 'slideInLeft 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards'
+          : 'slideInRight 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards'
       }
     : {};
 
@@ -135,8 +135,8 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
     return (
       <>
         <style jsx global>{sparkleKeyframes}</style>
-        {[...Array(10)].map((_, i) => {
-          const size = Math.random() * 10 + 5;
+        {[...Array(20)].map((_, i) => { // エフェクト数を増やす
+          const size = Math.random() * 15 + 8; // サイズを大きく
           const top = Math.random() * 100;
           const left = Math.random() * 100;
           const delay = Math.random() * 2;
@@ -152,7 +152,7 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
                 top: `${top}%`,
                 left: `${left}%`,
                 opacity: 0,
-                boxShadow: '0 0 10px 2px rgba(255, 255, 255, 0.8)',
+                boxShadow: '0 0 15px 3px rgba(255, 255, 255, 0.8)', // シャドウを強く
                 animation: `sparkle ${duration}s ${delay}s infinite`,
                 zIndex: 5
               }}
@@ -168,13 +168,13 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
       key={uniqueKey}
       className={cn(
         "absolute transform shadow-lg overflow-hidden",
-        side === 'left' ? 'left-8' : 'right-8',
-        "bottom-32" // 選手名の少し上に表示
+        side === 'left' ? 'left-4' : 'right-4', // 画面の左右に少し余白を持たせる
+        "bottom-[12vh]" // 画面の下から10%の位置に配置（さらに下に表示）
       )}
       style={{
         ...triangleStyles[side],
-        width: '280px',
-        height: '180px',
+        width: side === 'left' ? '40.5vw' : '40.5vw', // 画面幅の40.5%を使用（45vwの0.9倍）
+        height: '37.8vh', // 画面高さの37.8%を使用（42vhの0.9倍）
         backgroundColor: color === 'red' ? '#dc2626' : color === 'green' ? '#16a34a' : '#ffffff',
         position: 'absolute',
         zIndex: 4,
@@ -187,14 +187,14 @@ export function ScoreLamp({ type, color, side, active }: ScoreLampProps) {
       {/* テキストコンテンツ */}
       <div className="relative z-10 h-full w-full flex flex-col items-center justify-center">
         <div className={cn(
-          "text-2xl font-bold",
+          "text-5xl font-bold", // フォントサイズをさらに大きく
           color === 'white' ? 'text-black' : 'text-white'
         )}>
           {type && ScoreLampText[type]}
         </div>
         {/* 日本語テキスト */}
         <div className={cn(
-          "text-3xl font-bold mt-2",
+          "text-6xl font-bold mt-6", // フォントサイズをさらに大きく、マージンも調整
           color === 'white' ? 'text-black' : 'text-white'
         )}>
           {type && type.includes('attack') ? '攻撃' : 
