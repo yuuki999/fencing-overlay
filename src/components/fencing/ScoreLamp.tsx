@@ -31,6 +31,15 @@ const animationKeyframes = `
       opacity: 1;
     }
   }
+
+  @keyframes simpleGlow {
+    0%, 100% {
+      filter: drop-shadow(0 0 0px rgba(255, 255, 255, 0));
+    }
+    50% {
+      filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.7));
+    }
+  }
 `;
 
 interface ScoreLampProps {
@@ -45,11 +54,14 @@ export function ScoreLamp({ type, side, active }: ScoreLampProps) {
   const [isVisible, setIsVisible] = useState(false);
   // アニメーション状態
   const [isAnimating, setIsAnimating] = useState(false);
+  // キラキラエフェクト状態
+  const [isGlowActive, setIsGlowActive] = useState(false);
   // 前回のアクティブ状態とタイプを保存
   const prevActiveRef = useRef(false);
   const prevTypeRef = useRef<ScoreLampType>(null);
   // タイマーID
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const glowTimerRef = useRef<NodeJS.Timeout | null>(null);
   // 動画プレイヤーの要素を参照するためのref
   const videoPlayerRef = useRef<HTMLDivElement | null>(null);
 
@@ -66,10 +78,14 @@ export function ScoreLamp({ type, side, active }: ScoreLampProps) {
       // 表示状態とアニメーション状態を設定
       setIsVisible(true);
       setIsAnimating(true);
+      setIsGlowActive(true);
       
       // 前回のタイマーをクリア
       if (timerRef.current) {
         clearTimeout(timerRef.current);
+      }
+      if (glowTimerRef.current) {
+        clearTimeout(glowTimerRef.current);
       }
       
       // アニメーション終了後、アニメーション状態を解除
@@ -77,15 +93,26 @@ export function ScoreLamp({ type, side, active }: ScoreLampProps) {
         setIsAnimating(false);
         timerRef.current = null;
       }, 1000);
+
+      // 光るエフェクトは少し長く表示
+      glowTimerRef.current = setTimeout(() => {
+        setIsGlowActive(false);
+        glowTimerRef.current = null;
+      }, 2000);
     } else {
       // 非アクティブになった時
       setIsVisible(false);
       setIsAnimating(false);
+      setIsGlowActive(false);
       
       // タイマーをクリア
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
+      }
+      if (glowTimerRef.current) {
+        clearTimeout(glowTimerRef.current);
+        glowTimerRef.current = null;
       }
     }
     
@@ -98,6 +125,10 @@ export function ScoreLamp({ type, side, active }: ScoreLampProps) {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
+      }
+      if (glowTimerRef.current) {
+        clearTimeout(glowTimerRef.current);
+        glowTimerRef.current = null;
       }
     };
   }, [active, type]);
@@ -214,6 +245,14 @@ export function ScoreLamp({ type, side, active }: ScoreLampProps) {
     return styleObj;
   };
 
+  // 光るエフェクト用のスタイル
+  const getGlowStyle = (): React.CSSProperties => {
+    return {
+      animation: isGlowActive ? 'simpleGlow 1s ease-in-out 2' : 'none',
+      filter: isGlowActive ? 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.6))' : 'none',
+    };
+  };
+
   // 画像のパスを取得
   const imagePath = getScoreLampImagePath();
 
@@ -227,15 +266,17 @@ export function ScoreLamp({ type, side, active }: ScoreLampProps) {
       <style jsx global>{animationKeyframes}</style>
       
       {/* 画像を表示 */}
-      <Image
-        src={imagePath}
-        alt={`${side} ${type} score lamp`}
-        width={1000}
-        height={600}
-        className="w-full h-auto"
-        priority
-        unoptimized
-      />
+      <div style={getGlowStyle()}>
+        <Image
+          src={imagePath}
+          alt={`${side} ${type} score lamp`}
+          width={1000}
+          height={600}
+          className="w-full h-auto"
+          priority
+          unoptimized
+        />
+      </div>
     </div>
   );
 }
