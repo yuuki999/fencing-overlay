@@ -7,7 +7,7 @@ import { PlayerScorePanel } from "./PlayerScorePanel";
 import { SoundPlayer } from "./SoundPlayer";
 import { FencingController } from "./FencingController";
 import { ScoreLamp } from "./ScoreLamp";
-import { FencingState, PlayerInfo, SoundType } from "@/types/fencing";
+import { FencingState, PlayerInfo, SoundType, AttackSide } from "@/types/fencing";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -35,6 +35,9 @@ export function FencingOverlay() {
       active: false,
     },
   });
+  
+  // 前回の優先権表示位置を記録
+  const [prevAttackIndicator, setPrevAttackIndicator] = useState<AttackSide>(null);
   
   // アクションモードの状態
   const [actionMode, setActionMode] = useState(false);
@@ -80,6 +83,14 @@ export function FencingOverlay() {
   const handleStateChange = useCallback((newState: FencingState) => {
     setFencingState(newState);
   }, []);
+  
+  // 優先権表示が変更されたときに前回の状態を更新
+  useEffect(() => {
+    // attackIndicatorが変更され、かつnullでない場合に前回の状態を記録
+    if (fencingState.attackIndicator !== null) {
+      setPrevAttackIndicator(fencingState.attackIndicator);
+    }
+  }, [fencingState.attackIndicator]);
 
   // 効果音を再生するハンドラ
   const handlePlaySound = useCallback((sound: SoundType) => {
@@ -423,10 +434,19 @@ export function FencingOverlay() {
           onVideoLoaded={handleVideoLoaded}
           overlayContent={
             <>
-              {/* 攻防表示 */}
+              {/* 攻防表示 - 左右の優先権表示を個別に制御 */}
+              {/* 左側の優先権表示 */}
               <AttackIndicator 
-                side={fencingState.attackIndicator} 
-                visible={fencingState.attackIndicator !== null} 
+                side="left"
+                visible={fencingState.attackIndicator === "left" || (fencingState.attackIndicator === "right" && prevAttackIndicator === "left")} 
+                transitionState={fencingState.attackIndicator === "left" ? 0 : 1}
+              />
+              
+              {/* 右側の優先権表示 */}
+              <AttackIndicator 
+                side="right"
+                visible={fencingState.attackIndicator === "right" || (fencingState.attackIndicator === "left" && prevAttackIndicator === "right")} 
+                transitionState={fencingState.attackIndicator === "right" ? 0 : 1}
               />
               
               {/* スコアランプ表示 */}
