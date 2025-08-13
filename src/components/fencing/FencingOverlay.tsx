@@ -168,66 +168,66 @@ export function FencingOverlay() {
         </Button>
       </div>
       
-      {/* 操作説明 */}
+      {/* Instructions */}
       {showInstructions && (
         <Card className="p-4">
-          <h2 className="text-lg font-bold mb-2">キーボードショートカット</h2>
+          <h2 className="text-lg font-bold mb-2">Keyboard Shortcuts</h2>
           <div className="text-sm mb-4 text-yellow-600 dark:text-yellow-400 font-medium">
-            ※ キーボード操作はアクションモードがONの時のみ有効です<br />
-            ※ Alt+Aキーでアクションモードを切り替えることもできます
+            ※ Keyboard controls are only active when Action Mode is ON<br />
+            ※ You can also toggle Action Mode with Alt+A
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <h3 className="font-medium">攻防表示</h3>
+              <h3 className="font-medium">Priority Display</h3>
               <ul className="list-disc pl-5">
-                <li>9キー: 左側に表示</li>
-                <li>0キー: 右側に表示</li>
-                <li>ESCキー: 非表示</li>
+                <li>9 key: Display on left</li>
+                <li>0 key: Display on right</li>
+                <li>ESC key: Hide</li>
               </ul>
             </div>
             <div>
-              <h3 className="font-medium">効果音</h3>
+              <h3 className="font-medium">Sound Effects</h3>
               <ul className="list-disc pl-5">
-                <li>1キー: 剣をはらう音(ｶｷｰﾝ)</li>
-                <li>2キー: 空振り音(ﾌﾞｫﾝ)</li>
-                <li>3キー: 止まる足音(ｷｭｯ)</li>
-                <li>4キー: 剣がこすれる音(ｶｼｭ)</li>
+                <li>1 key: Blade clash sound</li>
+                <li>2 key: Miss sound</li>
+                <li>3 key: Stop footstep sound</li>
+                <li>4 key: Blade scrape sound</li>
               </ul>
             </div>
             <div>
-              <h3 className="font-medium">左側選手のスコアランプ</h3>
+              <h3 className="font-medium">Left Fencer Score Lamps</h3>
               <ul className="list-disc pl-5">
-                <li>Qキー: 攻撃成功（赤）</li>
-                <li>Aキー: 攻撃無効（白）</li>
-                <li>Wキー: 防御成功（赤）</li>
-                <li>Sキー: 防御無効（白）</li>
-                <li>Eキー: 反撃成功（赤）</li>
-                <li>Dキー: 反撃無効（白）</li>
+                <li>Q key: Attack valid (Red)</li>
+                <li>A key: Attack invalid (White)</li>
+                <li>W key: Parry valid (Red)</li>
+                <li>S key: Parry invalid (White)</li>
+                <li>E key: Riposte valid (Red)</li>
+                <li>D key: Riposte invalid (White)</li>
               </ul>
             </div>
             <div>
-              <h3 className="font-medium">右側選手のスコアランプ</h3>
+              <h3 className="font-medium">Right Fencer Score Lamps</h3>
               <ul className="list-disc pl-5">
-                <li>Uキー: 攻撃成功（緑）</li>
-                <li>Jキー: 攻撃無効（白）</li>
-                <li>Iキー: 防御成功（緑）</li>
-                <li>Kキー: 防御無効（白）</li>
-                <li>Oキー: 反撃成功（緑）</li>
-                <li>Lキー: 反撃無効（白）</li>
+                <li>U key: Attack valid (Green)</li>
+                <li>J key: Attack invalid (White)</li>
+                <li>I key: Parry valid (Green)</li>
+                <li>K key: Parry invalid (White)</li>
+                <li>O key: Riposte valid (Green)</li>
+                <li>L key: Riposte invalid (White)</li>
               </ul>
             </div>
             <div>
-              <h3 className="font-medium">再生コントロール</h3>
+              <h3 className="font-medium">Playback Control</h3>
               <ul className="list-disc pl-5">
-                <li>Shift+Mキー: 再生速度切替（通常→0.5倍→0.25倍）</li>
-                <li>Shift+Nキー: 通常速度に戻す</li>
+                <li>Shift+M: Cycle speed (Normal→0.5x→0.25x)</li>
+                <li>Shift+N: Reset to normal speed</li>
               </ul>
             </div>
             <div>
-              <h3 className="font-medium">選手名とスコアランプ</h3>
+              <h3 className="font-medium">Names & Score Lamps</h3>
               <ul className="list-disc pl-5">
-                <li>Nキー: 選手名表示切替</li>
-                <li>Zキー: スコアランプをリセット</li>
+                <li>N key: Toggle fencer names</li>
+                <li>Z key: Reset score lamps</li>
               </ul>
             </div>
           </div>
