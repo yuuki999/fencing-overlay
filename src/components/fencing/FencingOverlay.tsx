@@ -17,8 +17,8 @@ export function FencingOverlay() {
     left: PlayerInfo;
     right: PlayerInfo;
   }>({
-    left: { name: "左側選手", side: "left", showName: false },
-    right: { name: "右側選手", side: "right", showName: false },
+    left: { name: "Left Fencer", side: "left", showName: false },
+    right: { name: "Right Fencer", side: "right", showName: false },
   });
   
   // フェンシングの状態
@@ -139,7 +139,7 @@ export function FencingOverlay() {
 
   return (
     <div className="flex flex-col gap-6 w-full max-w-6xl mx-auto p-4">
-      <h1 className="text-2xl font-bold text-center">フェンシング動画オーバーレイシステム</h1>
+      <h1 className="text-2xl font-bold text-center">Fencing Video Overlay System</h1>
       
       {/* 操作説明ボタン */}
       <div className="flex justify-end gap-4">
@@ -151,12 +151,12 @@ export function FencingOverlay() {
           {actionMode ? (
             <>
               <span className="inline-block w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
-              アクションモード: ON
+              Action Mode: ON
             </>
           ) : (
             <>
               <span className="inline-block w-3 h-3 bg-gray-400 rounded-full"></span>
-              アクションモード: OFF
+              Action Mode: OFF
             </>
           )}
         </Button>
@@ -164,7 +164,7 @@ export function FencingOverlay() {
           variant="outline" 
           onClick={() => setShowInstructions(!showInstructions)}
         >
-          {showInstructions ? "操作説明を隠す" : "操作説明を表示"}
+          {showInstructions ? "Hide Instructions" : "Show Instructions"}
         </Button>
       </div>
       

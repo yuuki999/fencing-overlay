@@ -66,10 +66,10 @@ export function VideoPlayer({ onVideoLoaded, overlayContent }: VideoPlayerProps)
         videoRef.current.muted = newSpeed !== 'normal';
         videoRef.current.volume = newSpeed !== 'normal' ? 0 : 1;
       } catch (error) {
-        console.error('ビデオ設定エラー:', error);
+        console.error('Video settings error:', error);
       }
     } else {
-      console.warn('videoRef.currentがnullです');
+      console.warn('videoRef.current is null');
     }
   }, [playbackSpeed]);
 
@@ -84,7 +84,7 @@ export function VideoPlayer({ onVideoLoaded, overlayContent }: VideoPlayerProps)
         videoRef.current.muted = false;
         videoRef.current.volume = 1;
       } catch (error) {
-        console.error('ビデオ設定エラー:', error);
+        console.error('Video settings error:', error);
       }
     }
   }, []);
@@ -171,7 +171,7 @@ export function VideoPlayer({ onVideoLoaded, overlayContent }: VideoPlayerProps)
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center text-white">
-            動画ファイルを選択してください
+            Please select a video file
           </div>
         )}
         
@@ -185,7 +185,7 @@ export function VideoPlayer({ onVideoLoaded, overlayContent }: VideoPlayerProps)
         {/* 再生速度インジケーター */}
         {playbackSpeed !== 'normal' && videoSrc && (
           <div className="absolute top-4 right-4 bg-red-600 text-white px-3 py-2 rounded-md text-sm font-bold opacity-90">
-            {playbackSpeed === 'slow' ? '0.5倍速' : '0.25倍速'}
+            {playbackSpeed === 'slow' ? '0.5x Speed' : '0.25x Speed'}
           </div>
         )}
       </div>
@@ -206,7 +206,7 @@ export function VideoPlayer({ onVideoLoaded, overlayContent }: VideoPlayerProps)
               className="flex-1"
               variant="outline"
             >
-              動画ファイルを選択
+              Select Video File
             </Button>
             <Button
               onClick={cyclePlaybackSpeed}
@@ -214,9 +214,9 @@ export function VideoPlayer({ onVideoLoaded, overlayContent }: VideoPlayerProps)
               variant={playbackSpeed !== 'normal' ? "destructive" : "secondary"}
               className={!videoSrc ? "opacity-50 cursor-not-allowed" : ""}
             >
-              {playbackSpeed === 'normal' ? 'スロー再生' : 
-               playbackSpeed === 'slow' ? '0.5倍速 → 0.25倍速' : 
-               '0.25倍速 → 通常再生'}
+              {playbackSpeed === 'normal' ? 'Slow Motion' : 
+               playbackSpeed === 'slow' ? '0.5x → 0.25x' : 
+               '0.25x → Normal'}
             </Button>
             {playbackSpeed !== 'normal' && (
               <Button
@@ -225,7 +225,7 @@ export function VideoPlayer({ onVideoLoaded, overlayContent }: VideoPlayerProps)
                 variant="outline"
                 className={!videoSrc ? "opacity-50 cursor-not-allowed" : ""}
               >
-                通常再生に戻す
+                Back to Normal Speed
               </Button>
             )}
           </div>
