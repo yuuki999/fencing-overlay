@@ -7,7 +7,7 @@ import { PlayerScorePanel } from "./PlayerScorePanel";
 import { SoundPlayer } from "./SoundPlayer";
 import { FencingController } from "./FencingController";
 import { ScoreLamp } from "./ScoreLamp";
-import { FencingState, PlayerInfo, SoundType, AttackSide } from "@/types/fencing";
+import { FencingState, PlayerInfo, SoundType } from "@/types/fencing";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -35,9 +35,6 @@ export function FencingOverlay() {
       active: false,
     },
   });
-  
-  // 前回の優先権表示位置を記録
-  const [prevAttackIndicator, setPrevAttackIndicator] = useState<AttackSide>(null);
   
   // アクションモードの状態
   const [actionMode, setActionMode] = useState(false);
@@ -83,14 +80,6 @@ export function FencingOverlay() {
   const handleStateChange = useCallback((newState: FencingState) => {
     setFencingState(newState);
   }, []);
-  
-  // 優先権表示が変更されたときに前回の状態を更新
-  useEffect(() => {
-    // attackIndicatorが変更され、かつnullでない場合に前回の状態を記録
-    if (fencingState.attackIndicator !== null) {
-      setPrevAttackIndicator(fencingState.attackIndicator);
-    }
-  }, [fencingState.attackIndicator]);
 
   // 効果音を再生するハンドラ
   const handlePlaySound = useCallback((sound: SoundType) => {
@@ -123,195 +112,11 @@ export function FencingOverlay() {
     }));
   }, []);
 
-  // キーボードイベントハンドラ
+  // キーボードイベントハンドラ(リセット、選手名表示/非表示切り替えのみ)
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (!actionMode) return;
 
     switch (e.key.toLowerCase()) {
-      // 左側選手のスコアランプ
-      case 'q': // 攻撃成功（赤）
-        setFencingState(prev => ({
-          ...prev,
-          leftScore: {
-            type: 'attack-valid',
-            color: 'red',
-            active: true
-          },
-          rightScore: {
-            ...prev.rightScore,
-            active: false,
-            type: null
-          }
-        }));
-        break;
-      case 'a': // 攻撃無効（白）
-        setFencingState(prev => ({
-          ...prev,
-          leftScore: {
-            type: 'attack-invalid',
-            color: 'white',
-            active: true
-          },
-          rightScore: {
-            ...prev.rightScore,
-            active: false,
-            type: null
-          }
-        }));
-        break;
-      case 'w': // 防御成功（赤）
-        setFencingState(prev => ({
-          ...prev,
-          leftScore: {
-            type: 'defense-valid',
-            color: 'red',
-            active: true
-          },
-          rightScore: {
-            ...prev.rightScore,
-            active: false,
-            type: null
-          }
-        }));
-        break;
-      case 's': // 防御無効（白）
-        setFencingState(prev => ({
-          ...prev,
-          leftScore: {
-            type: 'defense-invalid',
-            color: 'white',
-            active: true
-          },
-          rightScore: {
-            ...prev.rightScore,
-            active: false,
-            type: null
-          }
-        }));
-        break;
-      case 'e': // 反撃成功（赤）
-        setFencingState(prev => ({
-          ...prev,
-          leftScore: {
-            type: 'counter-valid',
-            color: 'red',
-            active: true
-          },
-          rightScore: {
-            ...prev.rightScore,
-            active: false,
-            type: null
-          }
-        }));
-        break;
-      case 'd': // 反撃無効（白）
-        setFencingState(prev => ({
-          ...prev,
-          leftScore: {
-            type: 'counter-invalid',
-            color: 'white',
-            active: true
-          },
-          rightScore: {
-            ...prev.rightScore,
-            active: false,
-            type: null
-          }
-        }));
-        break;
-
-      // 右側選手のスコアランプ
-      case 'u': // 攻撃成功（緑）
-        setFencingState(prev => ({
-          ...prev,
-          rightScore: {
-            type: 'attack-valid',
-            color: 'green',
-            active: true
-          },
-          leftScore: {
-            ...prev.leftScore,
-            active: false,
-            type: null
-          }
-        }));
-        break;
-      case 'j': // 攻撃無効（白）
-        setFencingState(prev => ({
-          ...prev,
-          rightScore: {
-            type: 'attack-invalid',
-            color: 'white',
-            active: true
-          },
-          leftScore: {
-            ...prev.leftScore,
-            active: false,
-            type: null
-          }
-        }));
-        break;
-      case 'i': // 防御成功（緑）
-        setFencingState(prev => ({
-          ...prev,
-          rightScore: {
-            type: 'defense-valid',
-            color: 'green',
-            active: true
-          },
-          leftScore: {
-            ...prev.leftScore,
-            active: false,
-            type: null
-          }
-        }));
-        break;
-      case 'k': // 防御無効（白）
-        setFencingState(prev => ({
-          ...prev,
-          rightScore: {
-            type: 'defense-invalid',
-            color: 'white',
-            active: true
-          },
-          leftScore: {
-            ...prev.leftScore,
-            active: false,
-            type: null
-          }
-        }));
-        break;
-      case 'o': // 反撃成功（緑）
-        setFencingState(prev => ({
-          ...prev,
-          rightScore: {
-            type: 'counter-valid',
-            color: 'green',
-            active: true
-          },
-          leftScore: {
-            ...prev.leftScore,
-            active: false,
-            type: null
-          }
-        }));
-        break;
-      case 'l': // 反撃無効（白）
-        setFencingState(prev => ({
-          ...prev,
-          rightScore: {
-            type: 'counter-invalid',
-            color: 'white',
-            active: true
-          },
-          leftScore: {
-            ...prev.leftScore,
-            active: false,
-            type: null
-          }
-        }));
-        break;
-
       // リセット
       case 'z':
         resetScoreLamps();
@@ -322,15 +127,15 @@ export function FencingOverlay() {
         toggleBothPlayerNamesVisibility();
         break;
     }
-  }, [actionMode, setFencingState, resetScoreLamps, toggleBothPlayerNamesVisibility]);
+  }, [actionMode, resetScoreLamps, toggleBothPlayerNamesVisibility]);
 
-  // キーボードイベントリスナーの設定
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [handleKeyDown]);
+    // キーボードイベントリスナーの設定
+    useEffect(() => {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }, [handleKeyDown]);
 
   return (
     <div className="flex flex-col gap-6 w-full max-w-6xl mx-auto p-4">
@@ -434,19 +239,10 @@ export function FencingOverlay() {
           onVideoLoaded={handleVideoLoaded}
           overlayContent={
             <>
-              {/* 攻防表示 - 左右の優先権表示を個別に制御 */}
-              {/* 左側の優先権表示 */}
+              {/* 攻防表示 */}
               <AttackIndicator 
-                side="left"
-                visible={fencingState.attackIndicator === "left" || (fencingState.attackIndicator === "right" && prevAttackIndicator === "left")} 
-                transitionState={fencingState.attackIndicator === "left" ? 0 : 1}
-              />
-              
-              {/* 右側の優先権表示 */}
-              <AttackIndicator 
-                side="right"
-                visible={fencingState.attackIndicator === "right" || (fencingState.attackIndicator === "left" && prevAttackIndicator === "right")} 
-                transitionState={fencingState.attackIndicator === "right" ? 0 : 1}
+                side={fencingState.attackIndicator} 
+                visible={fencingState.attackIndicator !== null} 
               />
               
               {/* スコアランプ表示 */}

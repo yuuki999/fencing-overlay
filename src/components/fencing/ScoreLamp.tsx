@@ -185,7 +185,7 @@ export function ScoreLamp({ type, side, active }: ScoreLampProps) {
       const lampWidth = playerWidth * lampWidthRatio;
       
       // スコアランプの位置を計算 - 名前表示に被らないように上方に配置
-      const bottomOffset = isLeftValidKey() ? playerHeight * -0.10 : playerHeight * -0.55; // 左側の成功キーは高く、それ以外は少し低めに
+      const bottomOffset = isLeftValidKey() ? playerHeight * -0.15 : playerHeight * -0.60; // 左側の成功キーは高く、それ以外は少し低めに
       
       // 左右の位置を計算
       const sideOffset = isLeftValidKey() ? 0 : -playerWidth * 0.1; // 左側の成功キー以外は少し外側にはみ出すように
