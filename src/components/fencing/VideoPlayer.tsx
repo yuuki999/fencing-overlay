@@ -13,7 +13,7 @@ export function VideoPlayer({ onVideoLoaded, overlayContent }: VideoPlayerProps)
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
-  const [isSlowMotion, setIsSlowMotion] = useState(false);
+  const [playbackSpeed, setPlaybackSpeed] = useState<'normal' | 'slow' | 'verySlow'>('normal');
   const [isMuted, setIsMuted] = useState(false);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,32 +31,63 @@ export function VideoPlayer({ onVideoLoaded, overlayContent }: VideoPlayerProps)
     }
   };
 
-  // スロー再生モードの切り替え
-  const toggleSlowMotion = useCallback(() => {    
+  // 再生速度の切り替え（3段階: 通常 → 0.5倍 → 0.25倍 → 通常）
+  const cyclePlaybackSpeed = useCallback(() => {    
     if (videoRef.current) {
-      const newSlowMotion = !isSlowMotion;
+      let newSpeed: 'normal' | 'slow' | 'verySlow';
+      let playbackRate: number;
       
-      // まずステート更新
-      setIsSlowMotion(newSlowMotion);
-      setIsMuted(newSlowMotion);
+      // 速度を循環
+      switch (playbackSpeed) {
+        case 'normal':
+          newSpeed = 'slow';
+          playbackRate = 0.5;
+          break;
+        case 'slow':
+          newSpeed = 'verySlow';
+          playbackRate = 0.25;
+          break;
+        case 'verySlow':
+          newSpeed = 'normal';
+          playbackRate = 1.0;
+          break;
+        default:
+          newSpeed = 'normal';
+          playbackRate = 1.0;
+      }
       
-      // 次にDOM要素を直接操作
+      // ステート更新
+      setPlaybackSpeed(newSpeed);
+      setIsMuted(newSpeed !== 'normal');
+      
+      // DOM要素を直接操作
       try {
-        // 再生速度の設定
-        videoRef.current.playbackRate = newSlowMotion ? 0.25 : 1.0;
-        
-        // ミュート設定
-        videoRef.current.muted = newSlowMotion;
-        
-        // ボリューム設定
-        videoRef.current.volume = newSlowMotion ? 0 : 1;
+        videoRef.current.playbackRate = playbackRate;
+        videoRef.current.muted = newSpeed !== 'normal';
+        videoRef.current.volume = newSpeed !== 'normal' ? 0 : 1;
       } catch (error) {
         console.error('ビデオ設定エラー:', error);
       }
     } else {
       console.warn('videoRef.currentがnullです');
     }
-  }, [isSlowMotion]);
+  }, [playbackSpeed]);
+
+  // 通常速度に即座に戻す
+  const resetToNormalSpeed = useCallback(() => {
+    if (videoRef.current) {
+      setPlaybackSpeed('normal');
+      setIsMuted(false);
+      
+      try {
+        videoRef.current.playbackRate = 1.0;
+        videoRef.current.muted = false;
+        videoRef.current.volume = 1;
+      } catch (error) {
+        console.error('ビデオ設定エラー:', error);
+      }
+    }
+  }, []);
 
   // キーボードイベントのハンドラ
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -69,13 +100,19 @@ export function VideoPlayer({ onVideoLoaded, overlayContent }: VideoPlayerProps)
       return;
     }
 
-    // 'M'キーでスロー再生モードを切り替え
+    // Shift+Mで再生速度を循環切り替え
     if (e.key.toLowerCase() === 'm' && e.shiftKey) {
-      e.preventDefault(); // 先にpreventDefaultを実行
-      e.stopPropagation(); // イベントの伝播を停止
-      toggleSlowMotion();
+      e.preventDefault();
+      e.stopPropagation();
+      cyclePlaybackSpeed();
     }
-  }, [toggleSlowMotion]);
+    // Shift+Nで通常速度に即座に戻す
+    if (e.key.toLowerCase() === 'n' && e.shiftKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      resetToNormalSpeed();
+    }
+  }, [cyclePlaybackSpeed, resetToNormalSpeed]);
 
   // キーボードイベントリスナーの設定
   useEffect(() => {
@@ -130,7 +167,7 @@ export function VideoPlayer({ onVideoLoaded, overlayContent }: VideoPlayerProps)
               onVideoLoaded();
             }}
             muted={isMuted}
-            controls={!isSlowMotion}
+            controls={playbackSpeed === 'normal'}
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center text-white">
@@ -145,10 +182,10 @@ export function VideoPlayer({ onVideoLoaded, overlayContent }: VideoPlayerProps)
           </div>
         )}
         
-        {/* スロー再生モードインジケーター */}
-        {isSlowMotion && videoSrc && (
-          <div className="absolute top-4 right-4 bg-red-600 text-white px-2 py-1 rounded-md text-sm font-bold opacity-80">
-            スロー再生
+        {/* 再生速度インジケーター */}
+        {playbackSpeed !== 'normal' && videoSrc && (
+          <div className="absolute top-4 right-4 bg-red-600 text-white px-3 py-2 rounded-md text-sm font-bold opacity-90">
+            {playbackSpeed === 'slow' ? '0.5倍速' : '0.25倍速'}
           </div>
         )}
       </div>
@@ -172,13 +209,25 @@ export function VideoPlayer({ onVideoLoaded, overlayContent }: VideoPlayerProps)
               動画ファイルを選択
             </Button>
             <Button
-              onClick={toggleSlowMotion}
+              onClick={cyclePlaybackSpeed}
               disabled={!videoSrc}
-              variant={isSlowMotion ? "destructive" : "secondary"}
+              variant={playbackSpeed !== 'normal' ? "destructive" : "secondary"}
               className={!videoSrc ? "opacity-50 cursor-not-allowed" : ""}
             >
-              {isSlowMotion ? "通常再生に戻す" : "スロー再生"}
+              {playbackSpeed === 'normal' ? 'スロー再生' : 
+               playbackSpeed === 'slow' ? '0.5倍速 → 0.25倍速' : 
+               '0.25倍速 → 通常再生'}
             </Button>
+            {playbackSpeed !== 'normal' && (
+              <Button
+                onClick={resetToNormalSpeed}
+                disabled={!videoSrc}
+                variant="outline"
+                className={!videoSrc ? "opacity-50 cursor-not-allowed" : ""}
+              >
+                通常再生に戻す
+              </Button>
+            )}
           </div>
         </div>
       </Card>
