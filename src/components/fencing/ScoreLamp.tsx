@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { ScoreLampType, PlayerSide, ScoreColor } from "@/types/fencing";
 import Image from "next/image";
+// import { ImagePreloader } from "@/utils/imagePreloader";
 
 // アニメーション用のスタイル
 const animationKeyframes = `
@@ -133,14 +134,10 @@ export function ScoreLamp({ type, side, active }: ScoreLampProps) {
     };
   }, [active, type]);
 
-  // 表示されない場合は何も表示しない
-  if (!isVisible || !type) return null;
-
-  // 安定したキーを生成
-  const stableKey = `${side}-${type}`;
-
   // スコアランプの画像パスを取得する関数
   const getScoreLampImagePath = () => {
+    if (!type) return '';
+    
     // typeに基づいて画像のプレフィックスを決定
     let prefix = '';
     if (type.includes('attack')) {
@@ -166,7 +163,7 @@ export function ScoreLamp({ type, side, active }: ScoreLampProps) {
 
   // 左側のQWEキー（攻撃、防御、反撃の成功）かどうかを判定
   const isLeftValidKey = () => {
-    return side === 'left' && !type.includes('invalid');
+    return side === 'left' && type && !type.includes('invalid');
   };
 
   // 動画プレイヤーのサイズに基づいたスコアランプのサイズと位置を計算
@@ -255,6 +252,22 @@ export function ScoreLamp({ type, side, active }: ScoreLampProps) {
 
   // 画像のパスを取得
   const imagePath = getScoreLampImagePath();
+  
+  // Preload image when path changes
+  // useEffect(() => {
+  //   if (imagePath) {
+  //     const preloader = ImagePreloader.getInstance();
+  //     preloader.preloadImage(imagePath).catch(error => {
+  //       console.error('Error preloading score lamp image:', error);
+  //     });
+  //   }
+  // }, [imagePath]);
+
+  // 表示されない場合は何も表示しない
+  if (!isVisible || !type) return null;
+
+  // 安定したキーを生成
+  const stableKey = `${side}-${type}`;
 
   return (
     <div 
@@ -270,11 +283,13 @@ export function ScoreLamp({ type, side, active }: ScoreLampProps) {
         <Image
           src={imagePath}
           alt={`${side} ${type} score lamp`}
-          width={1000}
-          height={600}
+          width={500}
+          height={300}
           className="w-full h-auto"
-          priority
-          unoptimized
+          priority={true}
+          unoptimized={true}
+          loading="eager"
+          placeholder="empty"
         />
       </div>
     </div>

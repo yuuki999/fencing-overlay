@@ -10,6 +10,7 @@ import { ScoreLamp } from "./ScoreLamp";
 import { FencingState, PlayerInfo, SoundType } from "@/types/fencing";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+// import { ImagePreloader } from "@/utils/imagePreloader";
 
 export function FencingOverlay() {
   // 選手情報
@@ -137,9 +138,22 @@ export function FencingOverlay() {
       };
     }, [handleKeyDown]);
 
+    // Preload all score lamp images on component mount
+    // useEffect(() => {
+    //   const preloader = ImagePreloader.getInstance();
+    //   const imagePaths = ImagePreloader.getScoreLampImagePaths();
+      
+    //   // Preload images in the background
+    //   preloader.preloadImages(imagePaths).then(() => {
+    //     console.log('All score lamp images preloaded successfully');
+    //   }).catch(error => {
+    //     console.error('Error preloading images:', error);
+    //   });
+    // }, []);
+
   return (
     <div className="flex flex-col gap-6 w-full max-w-6xl mx-auto p-4">
-      <h1 className="text-2xl font-bold text-center">Fencing Video Overlay System</h1>
+      <h1 className="text-2xl font-bold text-center">Fencing Assist System</h1>
       
       {/* 操作説明ボタン */}
       <div className="flex justify-end gap-4">
